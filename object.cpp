@@ -1,6 +1,6 @@
 #include "object.h"
 #include "special_forms.h"
-#include "functions.h"
+#include "function.h"
 #include "scope.h"
 #include <cctype>
 #include <cstdarg>
