@@ -33,7 +33,7 @@ namespace functions {
             double result = 0.0;
             for (int i = 0; i < args.positionArgs(); ++i) {
                 Number *arg = castArgument<Number>(args, i);
-                result = arg->toDouble();
+                result += arg->toDouble();
             }
             return new Double(result);
         }
@@ -76,9 +76,59 @@ namespace functions {
             }
         }
     }
+
+    MultFunction *const MultFunction::object = new MultFunction;
+    const std::string MultFunction::NAME("*");
+    std::string MultFunction::getName() {
+        return NAME;
+    }
+    Object *MultFunction::call(Arguments &args) {
+        bool resultInteger = true;
+        for (int i = 0; i < args.positionArgs(); ++i) {
+            if (typeid(*args.getArg(i)) != typeid(Integer)) {
+                resultInteger = false;
+                break;
+            }
+        }
+        if (resultInteger) {
+            // We are already sure that all arguments types are Integer so no checks will be performed
+            mpz_class result(1);
+            for (int i = 0; i < args.positionArgs(); ++i)
+                result *= static_cast<Integer *>(args.getArg(i))->getVal();
+            return new Integer(result);
+        } else {
+            // we shall check that all of the arguments are either Integer or Double
+            double result = 1.0;
+            for (int i = 0; i < args.positionArgs(); ++i) {
+                Number *arg = castArgument<Number>(args, i);
+                result *= arg->toDouble();
+            }
+            return new Double(result);
+        }
+    }
+    DivideFunction *const DivideFunction::object = new DivideFunction;
+    const std::string DivideFunction::NAME("/");
+
+    std::string DivideFunction::getName() {
+        return NAME;
+    }
+    Object *DivideFunction::call(Arguments &args) {
+        if (args.positionArgs() == 0) {
+            argumentNumberError(args, 1);
+        } else if (args.positionArgs() == 1) {
+            return new Double(1.0 / castArgument<Number>(args, 0)->toDouble());
+        } else {
+            double result = castArgument<Number>(args, 0)->toDouble();
+            for (int i = 1; i < args.positionArgs(); ++i)
+                result /= castArgument<Number>(args, 0)->toDouble();
+            return new Double(result);
+        }
+    }
     void init(Scope *scope) {
         add(PlusFunction::object, scope);
         add(MinusFunction::object, scope);
+        add(MultFunction::object, scope);
+        add(DivideFunction::object, scope);
     }
 }
 
