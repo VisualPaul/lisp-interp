@@ -8,7 +8,7 @@ namespace functions {
     public:
         static PlusFunction *const object;
         static const std::string NAME;
-        Object *call(const Arguments &args) override;
+        Object *call(Arguments &args) override;
         std::string getName() override;
     };
 
@@ -19,7 +19,9 @@ namespace functions {
         static MinusFunction *const object;
         static const std::string NAME;
 
-        Object *call(const Arguments &args) override;
+        Object *call(Arguments &args) override;
         std::string getName() override;
     };
+
+    void init(Scope *scope);
 };

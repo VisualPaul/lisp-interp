@@ -1,7 +1,12 @@
-#include "function.h
+#include "function.h"
 
 Function *Function::clone() {
     return this;
+}
+
+const std::string Function::NAME("Function");
+std::string Function::getTypeName() {
+    return NAME;
 }
 
 void Function::print(std::ostream &out) {

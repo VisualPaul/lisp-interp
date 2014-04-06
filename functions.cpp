@@ -1,8 +1,19 @@
 #include "functions.h"
+#include "scope.h"
+
+namespace {
+    void add(Function *func, Scope *scope) {
+        scope->addVariable(Symbol::getSymbol(func->getName()), func);
+    }
+}
 
 namespace functions {
     PlusFunction *const PlusFunction::object = new PlusFunction;
-    const std::stirng PlusFunction::NAME("+");
+    const std::string PlusFunction::NAME("+");
+    std::string PlusFunction::getName() {
+        return NAME;
+    }
+    
     Object *PlusFunction::call(Arguments &args) {
         bool resultInteger = true;
         for (int i = 0; i < args.positionArgs(); ++i) {
@@ -27,17 +38,47 @@ namespace functions {
             return new Double(result);
         }
     }
-    std::string PlusFunction::getName() {
-        return NAME;
-    }
+
     MinusFunction *const MinusFunction::object = new MinusFunction;
-    const std::sting MinusFunction::NAME("-");
+    const std::string MinusFunction::NAME("-");
     std::string MinusFunction::getName() {
         return NAME;
     }
+    
     Object *MinusFunction::call(Arguments &args) {
         if (args.positionArgs() == 0) {
-            
+            argumentNumberError(args, 1);
+        } else if (args.positionArgs() == 1) {
+            Number *x = castArgument<Number>(args, 0);
+            if (x->isInteger())
+                return new Integer(-static_cast<Integer *>(x)->getVal());
+            else
+                return new Double(x->toDouble());
+        } else {
+            bool allInteger = true;
+            for (int i = 0; i < args.positionArgs(); ++i) {
+                if (typeid(*args.getArg(i)) != typeid(Integer)) {
+                    allInteger = false;
+                    break;
+                }
+            }
+            if (allInteger) {
+                // We can perform no checks because we already know that all of our arguments are Integer
+                mpz_class result(static_cast<Integer *>(args.getArg(0))->getVal());
+                for (int i = 1; i < args.positionArgs(); ++i)
+                    result -= static_cast<Integer *>(args.getArg(i))->getVal();
+                return new Integer(result);
+            } else {
+                double result = castArgument<Number>(args, 0)->toDouble();
+                for (int i = 1; i < args.positionArgs(); ++i)
+                    result -= castArgument<Number>(args, i)->toDouble();
+                return new Double(result);
+            }
         }
     }
+    void init(Scope *scope) {
+        add(PlusFunction::object, scope);
+        add(MinusFunction::object, scope);
+    }
 }
+

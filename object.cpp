@@ -1,4 +1,7 @@
 #include "object.h"
+#include "special_forms.h"
+#include "functions.h"
+#include "scope.h"
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
@@ -14,7 +17,7 @@ bool Object::isNull() {
     return false;
 }
 
-Object *Object::evalute(Scope *scope) {
+Object *Object::evalute(Scope *) {
     return this;
 }
 
@@ -54,7 +57,7 @@ std::string Symbol::getText() {
 }
 
 Object *Symbol::evalute(Scope *scope) {
-    return scope->getVariable(scope);
+    return scope->getVariable(this);
 }
 
 void Symbol::print(std::ostream &out) {
@@ -101,7 +104,7 @@ Character::~Character() {
 
 }
 
-const std::string Number::NAME("Number");
+const std::string Number::TYPE_NAME("Number");
 
 Double::Double(const std::string &str) : _val(strtod(str.c_str(), nullptr)) {
 }
@@ -215,6 +218,14 @@ Object *ConsCell::fromVector(const std::vector<Object *> &vc)
     return result;
 }
 
+std::vector<Object *> ConsCell::toVector(Object *lst) {
+    ListIterator it(lst);
+    std::vector<Object *> result;
+    while (it.hasNext())
+        result.push_back(it.next());
+    return result;
+}
+
 void ConsCell::print(std::ostream &out) {
     if (!isList()) {
         out << "(";
@@ -248,21 +259,24 @@ Object *ConsCell::evalute(Scope *scope) {
     if (!isList())
         error("Cannot evalute cons cell");
     Symbol *smb = dynamic_cast<Symbol *>(car());
-    if (smb == nullptr) {
-        error("Every list that is a Lisp form must start with symbol. At least for now");
+    if (smb != nullptr) {
+        using namespace special_forms;
+        if (smb == quoteSymbol) {
+            return quoteSpecial(cdr(), scope);
+        } else if (smb == ifSymbol) {
+            return ifSpecial(cdr(), scope);
+        } else if (smb == letSymbol) {
+            return letSpecial(cdr(), scope);
+        } else if (smb == progSymbol) {
+            return progSpecial(cdr(), scope);
+        }
     }
-    using namespace special_forms;
-    if (smb == quoteSymbol) {
-        return quoteSpecial(cdr(), scope);
-    } else if (smb == ifSymbol) {
-        return ifSpecial(cdr(), scope);
-    } else if (smb == letSymbol) {
-        return letSpecial(cdr(), scope);
-    } else if (smb == progSymbol) {
-        return progSpecial(cdr(), scope);
-    } else {
-        // TODO: this part of code is neither finished nor close to being finished
-    }
+    Function *func = dynamic_cast<Function *>(car()->evalute(scope));
+    if (func == nullptr)
+        error("first object in Lisp form must be either special form name or function");
+    Arguments args(cdr());
+    return func->call(args);
+    
 }
 
 bool ConsCell::isList() {

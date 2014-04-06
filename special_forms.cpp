@@ -1,8 +1,9 @@
 #include "special_forms.h"
+#include "scope.h"
 #include <memory>
 
 namespace special_forms {
-    Object *quoteSpecial(Object *args, Scope *scope) {
+    Object *quoteSpecial(Object *args, Scope *) {
         if (!args->isList()) {
             error("incorrect argument to function quoteSpecial: expected list");
         }
@@ -20,15 +21,15 @@ namespace special_forms {
         if (len != 2 && len != 3)
             error("wrong number of arguments to if special form");
         auto vargs = ConsCell::toVector(args);
-        Object *test = v[0];
-        Object *then = v[1];
+        Object *test = vargs[0];
+        Object *then = vargs[1];
         Object *otherwise = NullObject::null;
-        if (v.size() == 3)
-            otherwise = v[2];        
+        if (vargs.size() == 3)
+            otherwise = vargs[2];        
         if (!test->evalute(scope)->isNull())
             return then->evalute(scope);
         else
-            return otherwise->evalute(scope());
+            return otherwise->evalute(scope);
     }
 
     Object *letSpecial(Object *args, Scope *scope) {

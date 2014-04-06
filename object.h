@@ -18,7 +18,7 @@ public:
     virtual bool isList();
     virtual bool isNull();
     virtual Object *evalute(Scope *scope );
-    virtual std::string typeName() = 0;
+    virtual std::string getTypeName() = 0;
 protected:
     virtual ~Object();
 };
@@ -32,8 +32,7 @@ public:
     int getId() { return static_cast<int>(_sym); }
     void print(std::ostream &out) override;
     Object *evalute(Scope *scope) override;
-
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     void operator =(const Symbol &) = delete;
@@ -54,7 +53,7 @@ public:
     String *clone() override;
     void print(std::ostream &out) override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     std::string getString() { return _str; }
@@ -69,7 +68,7 @@ public:
     Character *clone() override;
     void print(std::ostream &out) override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     char getChar() { return _c; }
@@ -80,7 +79,7 @@ private:
 
 class Number : public Object {
 public:
-    static const std::string NAME;
+    static const std::string TYPE_NAME;
     virtual bool isInteger() = 0;
     virtual double toDouble() = 0;
 };
@@ -99,7 +98,7 @@ public:
     Integer *clone() override;
     void print(std::ostream &out) override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     bool isInteger() override;
@@ -121,13 +120,14 @@ public:
     static bool checkString(const std::string &str);
     void print(std::ostream &out) override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     bool isInteger() override;
     double toDouble() override;
 
-    double getValue() { return _val; }
+    double getVal() { return _val; }
+    
     ~Double();
 private:
     double _val;
@@ -143,7 +143,7 @@ public:
     bool isList() override;
     bool isNull() override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
     static NullObject *const null;
@@ -155,8 +155,8 @@ private:
 
 class ConsCell : public Object {
 public:
-    static Object *fromVector(const std::vector<Object *> &);
-    static std::vector<Object *> toVector(Object *);
+    static Object *fromVector(const std::vector<Object *> &vec);
+    static std::vector<Object *> toVector(Object *list);
     ConsCell(Object *car, Object *cdr) : _car(car), _cdr(cdr) {}
     Object *evalute(Scope *scope) override;
     Object *car() {
@@ -176,7 +176,7 @@ public:
     ~ConsCell();
     void print(std::ostream &str) override;
 
-    std::string typeName() override;
+    std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
 private:
@@ -190,7 +190,10 @@ inline Object *lispBool(bool x) {
 
 int listLength(Object *list);
 bool listAtLeast(Object *list, int minSize);
-int listGet(Object *list, int x);
+Object *listGet(Object *list, int x);
+
+//utility functions for error handling
+void error(const char *fmt, ...) __attribute__((noreturn));
 
 class ListIterator {
 public:
@@ -217,8 +220,5 @@ std::string escape(const std::string &s);
 
 // utility functions to work with istreams
 std::istream &skipStreamSpaces(std::istream &str);
-
-//utility functions for error handling
-void error(const char *fmt, ...) __attribute__((noreturn));
 
 #endif
