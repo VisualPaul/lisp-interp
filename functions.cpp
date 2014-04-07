@@ -120,15 +120,35 @@ namespace functions {
         } else {
             double result = castArgument<Number>(args, 0)->toDouble();
             for (int i = 1; i < args.positionArgs(); ++i)
-                result /= castArgument<Number>(args, 0)->toDouble();
+                result /= castArgument<Number>(args, i)->toDouble();
             return new Double(result);
         }
     }
+
+    IntegerDivideFunction *const IntegerDivideFunction::object = new IntegerDivideFunction;
+    const std::string IntegerDivideFunction::NAME("div");
+
+    std::string IntegerDivideFunction::getName() {
+        return NAME;
+    }
+
+    Object *IntegerDivideFunction::call(Arguments &args) {
+        if (args.positionArgs() <= 1) {
+            argumentNumberError(args, 2);
+        } else {
+            mpz_class result(castArgument<Integer>(args, 0)->getVal());
+            for (int i = 1; i < args.positionArgs(); ++i)
+                result /= castArgument<Integer>(args, 1)->getVal();
+            return new Integer(result);
+        }
+    }
+    
     void init(Scope *scope) {
         add(PlusFunction::object, scope);
         add(MinusFunction::object, scope);
         add(MultFunction::object, scope);
         add(DivideFunction::object, scope);
+        add(IntegerDivideFunction::object, scope);
     }
 }
 

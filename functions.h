@@ -41,6 +41,15 @@ namespace functions {
         Object *call(Arguments &args) override;
         std::string getName() override;
     };
+    class IntegerDivideFunction : public Function {
+        IntegerDivideFunction()  {}
+        ~IntegerDivideFunction() {}
+    public:
+        static IntegerDivideFunction *const object;
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+        std::string getName() override;
+    };
 
     void init(Scope *scope);
 };
