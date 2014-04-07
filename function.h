@@ -7,6 +7,8 @@
 class Arguments {
 public:    
     Arguments(Object *argList) : _args(ConsCell::toVector(argList)) {}
+    Arguments(std::vector<Object *> &&args) : _args(args) {}
+    Arguments(const std::vector<Object *> &args) : _args(args) {}
     std::vector<Object *> getPositionArgs() {return _args; }
     Object *getArg(int idx) {
         if (idx < 0 || (size_t)idx > _args.size())

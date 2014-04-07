@@ -274,7 +274,11 @@ Object *ConsCell::evalute(Scope *scope) {
     Function *func = dynamic_cast<Function *>(car()->evalute(scope));
     if (func == nullptr)
         error("first object in Lisp form must be either special form name or function");
-    Arguments args(cdr());
+    std::vector<Object *> argsVector;
+    ListIterator it(cdr());
+    while (it.hasNext())
+        argsVector.push_back(it.next()->evalute(scope));
+    Arguments args(argsVector);
     return func->call(args);
     
 }
