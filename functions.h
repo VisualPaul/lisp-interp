@@ -50,6 +50,33 @@ namespace functions {
         Object *call(Arguments &args) override;
         std::string getName() override;
     };
+    class IntegerModFunction : public Function {
+        IntegerModFunction() {}
+        ~IntegerModFunction() {}
+    public:
+        static IntegerModFunction *const object;
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+        std::string getName() override;
+    };
+    class GCDFunction : public Function {
+        GCDFunction() {}
+        ~GCDFunction() {}
+    public:
+        static GCDFunction *const object;
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+        std::string getName() override;
+    };
+    class LCMFunction : public Function {
+        LCMFunction() {}
+        ~LCMFunction() {}
+    public:
+        static LCMFunction *const object;
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+        std::string getName() override;
+    };
 
     void init(Scope *scope);
 };
