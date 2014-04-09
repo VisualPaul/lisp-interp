@@ -264,15 +264,16 @@ Object *ConsCell::evalute(Scope *scope) {
     Symbol *smb = dynamic_cast<Symbol *>(car());
     if (smb != nullptr) {
         using namespace special_forms;
-        if (smb == quoteSymbol) {
+        if (smb == quoteSymbol)
             return quoteSpecial(cdr(), scope);
-        } else if (smb == ifSymbol) {
+        else if (smb == ifSymbol)
             return ifSpecial(cdr(), scope);
-        } else if (smb == letSymbol) {
+        else if (smb == letSymbol)
             return letSpecial(cdr(), scope);
-        } else if (smb == progSymbol) {
+        else if (smb == progSymbol)
             return progSpecial(cdr(), scope);
-        }
+        else if (smb == lambdaSymbol)
+            return lambdaSpecial(cdr(), scope);
     }
     Function *func = dynamic_cast<Function *>(car()->evalute(scope));
     if (func == nullptr)

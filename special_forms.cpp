@@ -1,5 +1,6 @@
 #include "special_forms.h"
 #include "scope.h"
+#include "function.h"
 #include <memory>
 
 namespace special_forms {
@@ -76,8 +77,28 @@ namespace special_forms {
         }
         return result;
     }
-    Symbol *const quoteSymbol = Symbol::getSymbol("quote");
-    Symbol *const ifSymbol    = Symbol::getSymbol("if");
-    Symbol *const letSymbol   = Symbol::getSymbol("let");
-    Symbol *const progSymbol  = Symbol::getSymbol("prog");
+    Object *lambdaSpecial(Object *args, Scope *scope) {
+        if (!args->isList()) {
+            error("incorrect argument to function lambdaSpecial: expected list");
+        }
+        if (!listAtLeast(args, 1)) {
+            error("lambda special form must contain an argument list");
+        }
+        ListIterator it(args);
+        Object *bindings = it.next();
+        std::vector<Symbol *> argumentNames;
+        ListIterator argIt(bindings);
+        while (argIt.hasNext()) {
+            Symbol *sym = dynamic_cast<Symbol *>(argIt.next());
+            if (sym == nullptr)
+                error("mailformed bindings for lambda special form: symbol expected");
+            argumentNames.push_back(sym);
+        }
+        return new UserDefinedFunction("lambda", scope, argumentNames, it.getObject());
+    }
+    Symbol *const quoteSymbol  = Symbol::getSymbol("quote");
+    Symbol *const ifSymbol     = Symbol::getSymbol("if");
+    Symbol *const letSymbol    = Symbol::getSymbol("let");
+    Symbol *const progSymbol   = Symbol::getSymbol("prog");
+    Symbol *const lambdaSymbol = Symbol::getSymbol("lambda");
 }
