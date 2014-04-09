@@ -8,12 +8,7 @@ namespace {
 }
 
 namespace functions {
-    PlusFunction *const PlusFunction::object = new PlusFunction;
-    const std::string PlusFunction::NAME("+");
-    std::string PlusFunction::getName() {
-        return NAME;
-    }
-    
+    const std::string PlusFunction::NAME("+");    
     Object *PlusFunction::call(Arguments &args) {
         bool resultInteger = true;
         for (int i = 0; i < args.positionArgs(); ++i) {
@@ -39,12 +34,7 @@ namespace functions {
         }
     }
 
-    MinusFunction *const MinusFunction::object = new MinusFunction;
-    const std::string MinusFunction::NAME("-");
-    std::string MinusFunction::getName() {
-        return NAME;
-    }
-    
+    const std::string MinusFunction::NAME("-");    
     Object *MinusFunction::call(Arguments &args) {
         if (args.positionArgs() == 0) {
             argumentNumberError(args, 1);
@@ -77,11 +67,7 @@ namespace functions {
         }
     }
 
-    MultFunction *const MultFunction::object = new MultFunction;
     const std::string MultFunction::NAME("*");
-    std::string MultFunction::getName() {
-        return NAME;
-    }
     Object *MultFunction::call(Arguments &args) {
         bool resultInteger = true;
         for (int i = 0; i < args.positionArgs(); ++i) {
@@ -106,12 +92,8 @@ namespace functions {
             return new Double(result);
         }
     }
-    DivideFunction *const DivideFunction::object = new DivideFunction;
+    
     const std::string DivideFunction::NAME("/");
-
-    std::string DivideFunction::getName() {
-        return NAME;
-    }
     Object *DivideFunction::call(Arguments &args) {
         if (args.positionArgs() == 0) {
             argumentNumberError(args, 1);
@@ -125,13 +107,7 @@ namespace functions {
         }
     }
 
-    IntegerDivideFunction *const IntegerDivideFunction::object = new IntegerDivideFunction;
     const std::string IntegerDivideFunction::NAME("div");
-
-    std::string IntegerDivideFunction::getName() {
-        return NAME;
-    }
-
     Object *IntegerDivideFunction::call(Arguments &args) {
         if (args.positionArgs() <= 1) {
             argumentNumberError(args, 2);
@@ -142,13 +118,8 @@ namespace functions {
             return new Integer(result);
         }
     }
-
-    IntegerModFunction *const IntegerModFunction::object = new IntegerModFunction;
+    
     const std::string IntegerModFunction::NAME("mod");
-    std::string IntegerModFunction::getName() {
-        return NAME;
-    }
-
     Object *IntegerModFunction::call(Arguments &args) {
         if (args.positionArgs() != 2)
             argumentNumberError(args, 2);
@@ -158,34 +129,21 @@ namespace functions {
         mpz_fdiv_r(r.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t());
         return new Integer(r);
     }
-
-    GCDFunction *const GCDFunction::object = new GCDFunction;
     const std::string GCDFunction::NAME("gcd");
-    std::string GCDFunction::getName() {
-        return NAME;
-    }
     Object *GCDFunction::call(Arguments &args) {
         mpz_class result(0);
         for (int i = 0; i < args.positionArgs(); ++i)
             mpz_gcd(result.get_mpz_t(), result.get_mpz_t(), castArgument<Integer>(args, i)->getVal().get_mpz_t());
         return new Integer(result);
     }
-    LCMFunction *const LCMFunction::object = new LCMFunction;
     const std::string LCMFunction::NAME("lcm");
-    std::string LCMFunction::getName() {
-        return NAME;
-    }
     Object *LCMFunction::call(Arguments &args) {
         mpz_class result(1);
         for (int i = 0; i < args.positionArgs(); ++i)
             mpz_lcm(result.get_mpz_t(), result.get_mpz_t(), castArgument<Integer>(args, i)->getVal().get_mpz_t());
         return new Integer(result);
     }
-    EvalFunction *const EvalFunction::object = new EvalFunction;
     const std::string EvalFunction::NAME("eval");
-    std::string EvalFunction::getName() {
-        return NAME;
-    }
     Object *EvalFunction::call(Arguments &args) {
         if (args.positionArgs() != 1)
             argumentNumberError(args, 1);

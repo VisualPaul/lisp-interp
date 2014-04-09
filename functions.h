@@ -3,8 +3,6 @@
 
 namespace functions {
     template <class Func> class FunctionHelper : public Function {
-        //        static_assert(std::is_base_of<FunctionHelper<Func>, Func>::value,
-        //                      "FunctionHelper's template argument must be derived from the same FunctionHelper");
     protected:
         FunctionHelper() {}
         ~FunctionHelper() {}
@@ -13,93 +11,57 @@ namespace functions {
         static Func *const object;
     };
     template <class Func> std::string FunctionHelper<Func>::getName() {
+        static_assert(std::is_base_of<FunctionHelper<Func>, Func>::value,
+                      "FunctionHelper's template argument must be derived from the same FunctionHelper");
         return Func::NAME;
     }
     template <class Func> Func *const FunctionHelper<Func>::object = new Func;
 
-    class PlusFunction : public Function {
-        PlusFunction() {}
-        ~PlusFunction() {}
+    class PlusFunction : public FunctionHelper<PlusFunction> {
     public:
-        static PlusFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
 
-    class MinusFunction : public Function {
-        MinusFunction() {}
-        ~MinusFunction() {}
+    class MinusFunction : public FunctionHelper<MinusFunction> {
     public:
-        static MinusFunction *const object;
         static const std::string NAME;
-
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class MultFunction : public Function {
-        MultFunction() {}
-        ~MultFunction() {}
+    class MultFunction : public FunctionHelper<MultFunction> {
     public:
-        static MultFunction *const object;
         static const std::string NAME;
-
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class DivideFunction : public Function {
-        DivideFunction() {}
-        ~DivideFunction() {}
+    class DivideFunction : public FunctionHelper<DivideFunction> {
     public:
-        static DivideFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class IntegerDivideFunction : public Function {
-        IntegerDivideFunction()  {}
-        ~IntegerDivideFunction() {}
+    class IntegerDivideFunction : public FunctionHelper<IntegerDivideFunction> {
     public:
-        static IntegerDivideFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class IntegerModFunction : public Function {
-        IntegerModFunction() {}
-        ~IntegerModFunction() {}
+    class IntegerModFunction : public FunctionHelper<IntegerModFunction> {
     public:
-        static IntegerModFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class GCDFunction : public Function {
-        GCDFunction() {}
-        ~GCDFunction() {}
+    class GCDFunction : public FunctionHelper<GCDFunction> {
     public:
-        static GCDFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class LCMFunction : public Function {
-        LCMFunction() {}
-        ~LCMFunction() {}
+    class LCMFunction : public FunctionHelper<LCMFunction> {
     public:
-        static LCMFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
-    class EvalFunction : public Function {
-        EvalFunction() {}
-        ~EvalFunction() {}
+    class EvalFunction : public FunctionHelper<EvalFunction> {
     public:
-        static EvalFunction *const object;
         static const std::string NAME;
         Object *call(Arguments &args) override;
-        std::string getName() override;
     };
     class ConsFunction : public FunctionHelper<ConsFunction> {
     public:
