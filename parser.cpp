@@ -60,6 +60,8 @@ Parser::_Token Parser::nextToken() {
             return _Token(new Integer(str));
         else if (Double::checkString(str))
             return _Token(new Double(str));
+        else if (str == "nil")
+            return NullObject::null;
         else
             return _Token(Symbol::getSymbol(str));
     }
