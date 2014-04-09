@@ -211,6 +211,9 @@ public:
         _p = cur->cdr();
         return cur->car();
     }
+    Object *getObject() {
+        return _p;
+    }
 private:
     Object *_p;
 };
