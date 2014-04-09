@@ -57,7 +57,10 @@ std::string Symbol::getText() {
 }
 
 Object *Symbol::evalute(Scope *scope) {
-    return scope->getVariable(this);
+    Object *result = scope->getVariable(this);
+    if (result == nullptr)
+        error("no such variable: %s", getText().c_str());
+    return result;
 }
 
 void Symbol::print(std::ostream &out) {
