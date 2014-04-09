@@ -4,6 +4,7 @@
 #include "object.h"
 
 class Scope {
+    Scope();
 public:
     Scope(Scope *parent);
     Object *getVariable(Symbol *sym);
@@ -22,6 +23,7 @@ public:
     bool hasVariable(Symbol *sym) {
         return getVariable(sym) != nullptr;
     }
+    static Scope *const global;
     
     ~Scope() {}
 private:

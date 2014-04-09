@@ -4,11 +4,16 @@ namespace functions {
     void init(Scope *); 
 }
 
-Scope::Scope(Scope *parentScope) : _parent(parentScope) {
-    if (parentScope == nullptr) {
-        functions::init(this);
-    }
+Scope::Scope() : _parent(nullptr) {
+    functions::init(this);
 }
+
+Scope::Scope(Scope *parentScope) : _parent(parentScope) {
+    if (!parentScope)
+        error("parent scope must not be null at Scope::Scope(Scope *)");
+}
+
+Scope *const Scope::global = new Scope;
 
 void Scope::setVariable(Symbol *sym, Object *val) {
     if (val == nullptr)

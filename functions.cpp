@@ -181,6 +181,23 @@ namespace functions {
             mpz_lcm(result.get_mpz_t(), result.get_mpz_t(), castArgument<Integer>(args, i)->getVal().get_mpz_t());
         return new Integer(result);
     }
+    EvalFunction *const EvalFunction::object = new EvalFunction;
+    const std::string EvalFunction::NAME("eval");
+    std::string EvalFunction::getName() {
+        return NAME;
+    }
+    Object *EvalFunction::call(Arguments &args) {
+        if (args.positionArgs() != 1)
+            argumentNumberError(args, 1);
+        return args.getArg(0)->evalute(Scope::global);
+    }
+
+    const std::string ConsFunction::NAME("cons");
+    Object *ConsFunction::call(Arguments &args) {
+        if (args.positionArgs() != 2)
+            argumentNumberError(args, 2);
+        return new ConsCell(args.getArg(0), args.getArg(1));
+    }
     
     void init(Scope *scope) {
         add(PlusFunction::object, scope);
@@ -191,6 +208,8 @@ namespace functions {
         add(IntegerModFunction::object, scope);
         add(GCDFunction::object, scope);
         add(LCMFunction::object, scope);
+        add(EvalFunction::object, scope);
+        add(ConsFunction::object, scope);
     }
 }
 

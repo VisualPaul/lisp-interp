@@ -2,6 +2,21 @@
 #include "function.h"
 
 namespace functions {
+    template <class Func> class FunctionHelper : public Function {
+        //        static_assert(std::is_base_of<FunctionHelper<Func>, Func>::value,
+        //                      "FunctionHelper's template argument must be derived from the same FunctionHelper");
+    protected:
+        FunctionHelper() {}
+        ~FunctionHelper() {}
+    public:
+        std::string getName() override;
+        static Func *const object;
+    };
+    template <class Func> std::string FunctionHelper<Func>::getName() {
+        return Func::NAME;
+    }
+    template <class Func> Func *const FunctionHelper<Func>::object = new Func;
+
     class PlusFunction : public Function {
         PlusFunction() {}
         ~PlusFunction() {}
@@ -77,6 +92,19 @@ namespace functions {
         Object *call(Arguments &args) override;
         std::string getName() override;
     };
-
+    class EvalFunction : public Function {
+        EvalFunction() {}
+        ~EvalFunction() {}
+    public:
+        static EvalFunction *const object;
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+        std::string getName() override;
+    };
+    class ConsFunction : public FunctionHelper<ConsFunction> {
+    public:
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+    };
     void init(Scope *scope);
 };
