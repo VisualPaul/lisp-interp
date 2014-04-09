@@ -24,13 +24,13 @@ private:
 
 class Function : public Object {
 public:
-    virtual Object *evalute(Scope *scope);
+    Object *evalute(Scope *scope) override;
     Function *clone() override;
     virtual Object *call(Arguments &args) = 0;
     virtual std::string getName() = 0;
     std::string getTypeName() override;
     void print(std::ostream &out) override;
-    static const std::string NAME;
+    static const std::string TYPE_NAME;
 protected:
     void reportTypeError(Arguments &args, int argNumber, std::string expected) __attribute__((noreturn)) {
         error("type mismatch at %s call: expected %s got %s as %d argument", getName().c_str(),
@@ -51,6 +51,18 @@ protected:
     }
 
     ~Function();
+};
+class UserDefinedFunction : public Function {
+public:
+    UserDefinedFunction(const std::string &name, Scope *baseScope, const std::vector<Symbol *> &args, Object *body);
+    UserDefinedFunction(const std::string &name, Scope *baseScope, std::vector<Symbol *> &&args, Object *body);
+    Object *call(Arguments &args) override;
+    std::string getName() override;
+private:
+    std::string _name;
+    Scope *_baseScope;
+    std::vector<Symbol *> _argumentsName;
+    Object *_body;
 };
 
 
