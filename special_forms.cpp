@@ -115,10 +115,28 @@ namespace special_forms {
         }
         return res;
     }
+    Object *defvarSpecial(Object *args, Scope *scope) {
+        if (!args->isList())
+            error("incorrect argument to function defvarSpecial: expected list");
+        if (listLength(args) % 2 != 0)
+            error("defvar special form must contain even number of arguments");
+        ListIterator it(args);
+        Object *res = NullObject::null;
+        while (it.hasNext()) {
+            Symbol *name = dynamic_cast<Symbol *>(it.next()->evalute(scope));
+            if (name == nullptr)
+                error("defvar special form argument must be a symbol");
+            Object *val = it.next()->evalute(scope);
+            res = val;
+            scope->addVariable(name, val);
+        }
+        return res;
+    }
     Symbol *const quoteSymbol  = Symbol::getSymbol("quote");
     Symbol *const ifSymbol     = Symbol::getSymbol("if");
     Symbol *const letSymbol    = Symbol::getSymbol("let");
     Symbol *const progSymbol   = Symbol::getSymbol("prog");
     Symbol *const lambdaSymbol = Symbol::getSymbol("lambda");
     Symbol *const setSymbol    = Symbol::getSymbol("set");
+    Symbol *const defvarSymbol = Symbol::getSymbol("defvar");
 }

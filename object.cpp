@@ -276,6 +276,8 @@ Object *ConsCell::evalute(Scope *scope) {
             return lambdaSpecial(cdr(), scope);
         else if (smb == setSymbol)
             return setSpecial(cdr(), scope);
+        else if (smb == defvarSymbol)
+            return defvarSpecial(cdr(), scope);
     }
     Function *func = dynamic_cast<Function *>(car()->evalute(scope));
     if (func == nullptr)
