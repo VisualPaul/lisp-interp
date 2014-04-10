@@ -96,9 +96,29 @@ namespace special_forms {
         }
         return new UserDefinedFunction("lambda", scope, argumentNames, it.getObject());
     }
+    Object *setSpecial(Object *args, Scope *scope) {
+        if (!args->isList()) {
+            error("incorrect argument to function setSpecial: expected list");
+        }
+        int n = listLength(args);
+        if (n % 2 != 0)
+            error("set special forms must contain even number of arguments");
+        ListIterator it(args);
+        Object *res = NullObject::null;
+        while (it.hasNext()) {
+            Symbol *name = dynamic_cast<Symbol *>(it.next()->evalute(scope));
+            if (name == nullptr)
+                error("set special form arguments must be symbols");
+            Object *val = it.next()->evalute(scope);
+            res = val;
+            scope->setVariable(name, val);
+        }
+        return res;
+    }
     Symbol *const quoteSymbol  = Symbol::getSymbol("quote");
     Symbol *const ifSymbol     = Symbol::getSymbol("if");
     Symbol *const letSymbol    = Symbol::getSymbol("let");
     Symbol *const progSymbol   = Symbol::getSymbol("prog");
     Symbol *const lambdaSymbol = Symbol::getSymbol("lambda");
+    Symbol *const setSymbol    = Symbol::getSymbol("set");
 }
