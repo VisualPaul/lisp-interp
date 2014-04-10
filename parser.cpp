@@ -45,13 +45,17 @@ Parser::_Token Parser::nextToken() {
                 res.push_back(c);
         }
         return new String(res);
-    } else if (firstChar == '\'') {
+    } else if (firstChar == '#') {
+        if (next() != '\'')
+            error("incorrect character literal");
         char c = next();
         if (c == '\\')
             c = getEscape();
         if (next() != '\'')
             error("multicharacter char constant");
         return new Character(c);
+    } else if (firstChar == '\'') {
+        return _Token(TT_QUOTE);
     } else {
         std::string str(1, firstChar);
         while (!_istr.eof() && !strchr("\n\t\v\r ()\f", peek()))
@@ -94,10 +98,22 @@ Object *Parser::nextExpression() {
                     return newList;
                 else
                     stack.back().push_back(newList);
+            } else if (tok.getType() == TT_QUOTE) {
+                stack.push_back(std::vector<Object *>());
+                stack.back().push_back(Symbol::getSymbol("quote"));
+                stack.back().push_back(nextExpression());
+                Object *newList = ConsCell::fromVector(stack.back());
+                stack.pop_back();
+                stack.back().push_back(newList);
             } else {
                 error("unknown token type: %d", firstToken.getType());
             }
         }
+    } else if (firstToken.getType() == TT_QUOTE) {
+        std::vector<Object *> lst;
+        lst.push_back(Symbol::getSymbol("quote"));
+        lst.push_back(nextExpression());
+        return ConsCell::fromVector(lst);
     } else {
         error("unknown token type: %d", firstToken.getType());
     }

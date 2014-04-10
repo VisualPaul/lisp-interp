@@ -13,7 +13,7 @@ private:
     int _lineno;
     std::istream &_istr;
     enum _TokenType {
-        TT_NORMAL, TT_OPEN, TT_CLOSE, TT_NO
+        TT_NORMAL, TT_OPEN, TT_CLOSE, TT_NO, TT_QUOTE
     };
     class _Token {
         int _type;
