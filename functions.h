@@ -1,7 +1,11 @@
 // -*-c++-*-
 #include "function.h"
+#include "scope.h"
 
 namespace functions {
+    void _add(Function *func, Scope *scope) {
+        scope->addVariable(Symbol::getSymbol(func->getName()), func);
+    }
     template <class Func> class FunctionHelper : public Function {
     protected:
         FunctionHelper() {}

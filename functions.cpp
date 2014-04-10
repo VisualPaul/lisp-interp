@@ -1,12 +1,5 @@
 #include "functions.h"
 #include "scope.h"
-
-namespace {
-    void add(Function *func, Scope *scope) {
-        scope->addVariable(Symbol::getSymbol(func->getName()), func);
-    }
-}
-
 namespace functions {
     const std::string PlusFunction::NAME("+");    
     Object *PlusFunction::call(Arguments &args) {
@@ -147,7 +140,7 @@ namespace functions {
     Object *EvalFunction::call(Arguments &args) {
         if (args.positionArgs() != 1)
             argumentNumberError(args, 1);
-        return args.getArg(0)->evalute(Scope::global);
+        return args.getArg(0)->evalute(Scope::global());
     }
 
     const std::string ConsFunction::NAME("cons");
@@ -158,16 +151,16 @@ namespace functions {
     }
     
     void init(Scope *scope) {
-        add(PlusFunction::object, scope);
-        add(MinusFunction::object, scope);
-        add(MultFunction::object, scope);
-        add(DivideFunction::object, scope);
-        add(IntegerDivideFunction::object, scope);
-        add(IntegerModFunction::object, scope);
-        add(GCDFunction::object, scope);
-        add(LCMFunction::object, scope);
-        add(EvalFunction::object, scope);
-        add(ConsFunction::object, scope);
+        _add(PlusFunction::object, scope);
+        _add(MinusFunction::object, scope);
+        _add(MultFunction::object, scope);
+        _add(DivideFunction::object, scope);
+        _add(IntegerDivideFunction::object, scope);
+        _add(IntegerModFunction::object, scope);
+        _add(GCDFunction::object, scope);
+        _add(LCMFunction::object, scope);
+        _add(EvalFunction::object, scope);
+        _add(ConsFunction::object, scope);
     }
 }
 

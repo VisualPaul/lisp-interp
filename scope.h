@@ -23,13 +23,13 @@ public:
     bool hasVariable(Symbol *sym) {
         return getVariable(sym) != nullptr;
     }
-    static Scope *const global;
+    static Scope *global();
     
     ~Scope() {}
 private:
     std::unordered_map<int, Object *> _m;
     Scope *_parent;
-
+    static Scope *_global;
 };
 
 #endif /* SCOPE_H */
