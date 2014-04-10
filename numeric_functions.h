@@ -53,4 +53,19 @@ namespace functions {
         static const std::string NAME;
         Object *call(Arguments &args) override;
     };
+    class NumberGreater : public FunctionHelper<NumberGreater> {
+    public:
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+    };
+    class NumberLessEqual : public FunctionHelper<NumberLessEqual> {
+    public:
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+    };
+    class NumberGreaterEqual : public FunctionHelper<NumberGreaterEqual> {
+    public:
+        static const std::string NAME;
+        Object *call(Arguments &args) override;
+    };
 }

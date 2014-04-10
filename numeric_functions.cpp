@@ -181,6 +181,61 @@ namespace functions {
         }
         return lispBool(true);
     }
+
+    const std::string NumberGreater::NAME(">");
+    Object *NumberGreater::call(Arguments &args) {
+        for (int i = 0; i < args.positionArgs() -1 ; ++i) {
+            Number *a = castArgument<Number>(args, i);
+            Number *b = castArgument<Number>(args, i + 1);
+            if (a->isInteger() && b->isInteger()) {
+                Integer *ia = static_cast<Integer *>(a);
+                Integer *ib = static_cast<Integer *>(b);
+                if (ia->getVal() <= ib->getVal())
+                    return lispBool(false);
+            } else {
+                if (a->toDouble() <= b->toDouble())
+                    return lispBool(false);
+            }
+        }
+        return lispBool(true); 
+    }
+
+    const std::string NumberLessEqual::NAME("<=");
+    Object *NumberLessEqual::call(Arguments &args) {
+        for (int i = 0; i < args.positionArgs() -1 ; ++i) {
+            Number *a = castArgument<Number>(args, i);
+            Number *b = castArgument<Number>(args, i + 1);
+            if (a->isInteger() && b->isInteger()) {
+                Integer *ia = static_cast<Integer *>(a);
+                Integer *ib = static_cast<Integer *>(b);
+                if (ia->getVal() > ib->getVal())
+                    return lispBool(false);
+            } else {
+                if (a->toDouble() > b->toDouble())
+                    return lispBool(false);
+            }
+        }
+        return lispBool(true); 
+    }
+
+    const std::string NumberGreaterEqual::NAME(">=");
+    Object *NumberGreaterEqual::call(Arguments &args) {
+        for (int i = 0; i < args.positionArgs() -1 ; ++i) {
+            Number *a = castArgument<Number>(args, i);
+            Number *b = castArgument<Number>(args, i + 1);
+            if (a->isInteger() && b->isInteger()) {
+                Integer *ia = static_cast<Integer *>(a);
+                Integer *ib = static_cast<Integer *>(b);
+                if (ia->getVal() < ib->getVal())
+                    return lispBool(false);
+            } else {
+                if (a->toDouble() < b->toDouble())
+                    return lispBool(false);
+            }
+        }
+        return lispBool(true); 
+    }
+    
     void numeric_init(Scope *scope) {
         _add(PlusFunction::object, scope);
         _add(MinusFunction::object, scope);
@@ -192,5 +247,8 @@ namespace functions {
         _add(LCMFunction::object, scope);
         _add(NumberEqual::object, scope);
         _add(NumberLess::object, scope);
+        _add(NumberGreater::object, scope);
+        _add(NumberGreaterEqual::object, scope);
+        _add(NumberLessEqual::object, scope);
     }
 }
