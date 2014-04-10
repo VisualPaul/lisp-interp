@@ -1,4 +1,6 @@
 // -*-c++-*-
+#ifndef NUMERIC_FUNCTIONS_H
+#define NUMERIC_FUNCTIONS_H
 #include "functions.h"
 
 namespace functions {
@@ -69,3 +71,4 @@ namespace functions {
         Object *call(Arguments &args) override;
     };
 }
+#endif /* NUMERIC_FUNCTIONS_H */

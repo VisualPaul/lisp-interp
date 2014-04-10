@@ -5,7 +5,7 @@
 
 int main()
 {
-    //std::ifstream in("test.lisp");
+    std::ifstream in("test.lisp");
     Parser par(std::cin);
     Object *exp;
     while ((exp = par.nextExpression()) != nullptr) {

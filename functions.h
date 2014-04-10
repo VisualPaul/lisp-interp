@@ -26,11 +26,7 @@ namespace functions {
         static const std::string NAME;
         Object *call(Arguments &args) override;
     };
-    class ConsFunction : public FunctionHelper<ConsFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
+    void list_init(Scope *scope);
     void numeric_init(Scope *scope);
     void init(Scope *scope);
 };
