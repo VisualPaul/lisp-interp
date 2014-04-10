@@ -3,7 +3,7 @@
 #include "scope.h"
 
 namespace functions {
-    void _add(Function *func, Scope *scope) {
+    inline void _add(Function *func, Scope *scope) {
         scope->addVariable(Symbol::getSymbol(func->getName()), func);
     }
     template <class Func> class FunctionHelper : public Function {
@@ -21,47 +21,6 @@ namespace functions {
     }
     template <class Func> Func *const FunctionHelper<Func>::object = new Func;
 
-    class PlusFunction : public FunctionHelper<PlusFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-
-    class MinusFunction : public FunctionHelper<MinusFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class MultFunction : public FunctionHelper<MultFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class DivideFunction : public FunctionHelper<DivideFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class IntegerDivideFunction : public FunctionHelper<IntegerDivideFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class IntegerModFunction : public FunctionHelper<IntegerModFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class GCDFunction : public FunctionHelper<GCDFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
-    class LCMFunction : public FunctionHelper<LCMFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
-    };
     class EvalFunction : public FunctionHelper<EvalFunction> {
     public:
         static const std::string NAME;
@@ -72,5 +31,6 @@ namespace functions {
         static const std::string NAME;
         Object *call(Arguments &args) override;
     };
+    void numeric_init(Scope *scope);
     void init(Scope *scope);
 };
