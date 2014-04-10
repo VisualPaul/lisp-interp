@@ -17,7 +17,7 @@ public:
     virtual void print(std::ostream &out) = 0;
     virtual bool isList();
     virtual bool isNull();
-    virtual Object *evalute(Scope *scope );
+    virtual Object *evalute(Scope *scope);
     virtual std::string getTypeName() = 0;
 protected:
     virtual ~Object();
