@@ -36,13 +36,13 @@ void Symbol::free() {
 }
 
 Symbol *Symbol::getSymbol(const std::string &str) {
-    auto it = _m.find(str);
-    if (it != _m.end())
+    auto it = _m()->find(str);
+    if (it != _m()->end())
         return it->second;
     Symbol *symbol = new Symbol;
-    symbol->_sym = _m.size();
-    _m.emplace(str, symbol);
-    _v.push_back(str);
+    symbol->_sym = _m()->size();
+    _m()->emplace(str, symbol);
+    _v().push_back(str);
     return symbol;
 }
 
@@ -53,7 +53,7 @@ std::string Symbol::getTypeName() {
 }
 
 std::string Symbol::getText() {
-    return _v[_sym];
+    return _v()[_sym];
 }
 
 Object *Symbol::evalute(Scope *scope) {
@@ -69,8 +69,9 @@ void Symbol::print(std::ostream &out) {
 
 Symbol::~Symbol() {
 }
-std::unordered_map<std::string, Symbol *> Symbol::_m;
-std::vector<std::string> Symbol::_v;
+
+std::unordered_map<std::string, Symbol *> *Symbol::_map;
+std::vector<std::string> *Symbol::_vec;
 
 String *String::clone() {
     return new String(_str);

@@ -40,8 +40,19 @@ public:
 protected:
     ~Symbol();
 private:
-    static std::unordered_map<std::string, Symbol *> _m;
-    static std::vector<std::string> _v;
+  
+    static std::unordered_map<std::string, Symbol *> *_map;
+    static std::unordered_map<std::string, Symbol *> *_m() {
+        if (!_map)
+            _map = new std::unordered_map<std::string, Symbol *>();
+        return _map;
+    }
+    static std::vector<std::string> &_v() {
+	if (!_vec)
+	    _vec = new std::vector<std::string>;
+	return *_vec;
+    }
+    static std::vector<std::string> *_vec;
     size_t _sym;
     Symbol() {}
 };

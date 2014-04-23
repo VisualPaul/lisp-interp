@@ -17,7 +17,7 @@ Scope *Scope::_global = nullptr;
 
 Scope *Scope::global() {
     if (!_global)
-        _global = new Scope;
+	_global = new Scope;
     return _global; 
 }
 
