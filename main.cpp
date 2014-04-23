@@ -3,14 +3,29 @@
 #include "scope.h"
 #include <memory>
 
-int main()
+int main(int argc, char **argv)
 {
-    std::ifstream in("test.lisp");
-    Parser par(std::cin);
+    bool repl_mode = true;
+    std::unique_ptr<std::ifstream> ptr;
+    std::istream *istr;
+    if (argc == 2) {
+	repl_mode = false;
+	ptr.reset(new std::ifstream(argv[1]));
+	istr = ptr.get();
+    } else if (argc != 1) {
+	std::cerr << "WTF SUP\n";
+    } else {
+	istr = &std::cin;
+	repl_mode = true;
+    }
+    Parser par(*istr);
     Object *exp;
     while ((exp = par.nextExpression()) != nullptr) {
-        exp->evalute(Scope::global())->print(std::cout);
-        std::cout << std::endl;
+        Object *result = exp->evalute(Scope::global());
+	if (repl_mode) {
+	    result->print(std::cout);
+	    std::cout << std::endl;
+	}
     }
     return 0;
 }
