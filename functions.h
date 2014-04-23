@@ -20,12 +20,16 @@ namespace functions {
         return Func::NAME;
     }
     template <class Func> Func *const FunctionHelper<Func>::object = new Func;
-
-    class EvalFunction : public FunctionHelper<EvalFunction> {
-    public:
-        static const std::string NAME;
-        Object *call(Arguments &args) override;
+#define declareFunctionHelper(className)\
+    class className : public FunctionHelper<className> {\
+    public:\
+        static const std::string NAME;\
+        Object *call(Arguments &args) override;\
     };
+    declareFunctionHelper(EvalFunction);
+    declareFunctionHelper(PrintFunction);
+    declareFunctionHelper(ReadFunction);
+    declareFunctionHelper(PrintLineFunction);
     void list_init(Scope *scope);
     void numeric_init(Scope *scope);
     void init(Scope *scope);
