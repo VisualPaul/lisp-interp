@@ -19,6 +19,10 @@ Object *Function::evalute(Scope *) {
     error("Cannot evalute function");
 }
 
+bool Function::isMacro() {
+    return false;
+}
+
 Function::~Function() {}
 
 UserDefinedFunction::UserDefinedFunction(const std::string &name, Scope *baseScope,

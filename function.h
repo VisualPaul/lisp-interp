@@ -28,6 +28,7 @@ public:
     Function *clone() override;
     virtual Object *call(Arguments &args) = 0;
     virtual std::string getName() = 0;
+    virtual bool isMacro();
     std::string getTypeName() override;
     void print(std::ostream &out) override;
     static const std::string TYPE_NAME;

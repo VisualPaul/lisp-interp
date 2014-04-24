@@ -86,9 +86,9 @@ namespace special_forms {
         }
         ListIterator it(args);
         Object *bindings = it.next();
-	String *functionNameObj = dynamic_cast<Function *>(bindings);
+	String *functionNameObj = dynamic_cast<String *>(bindings);
 	std::string functionName("lambda");
-	if (functionNameObj != nulllptr) {
+	if (functionNameObj != nullptr) {
 	    bindings = it.next();
 	    functionName = functionNameObj->getString();
 	}
