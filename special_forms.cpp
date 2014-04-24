@@ -86,6 +86,13 @@ namespace special_forms {
         }
         ListIterator it(args);
         Object *bindings = it.next();
+	String *functionNameObj = dynamic_cast<Function *>(bindings);
+	std::string functionName("lambda");
+	if (functionNameObj != nulllptr) {
+	    bindings = it.next();
+	    functionName = functionNameObj->getString();
+	}
+	
         std::vector<Symbol *> argumentNames;
         ListIterator argIt(bindings);
         while (argIt.hasNext()) {
@@ -94,7 +101,7 @@ namespace special_forms {
                 error("mailformed bindings for lambda special form: symbol expected");
             argumentNames.push_back(sym);
         }
-        return new UserDefinedFunction("lambda", scope, argumentNames, it.getObject());
+        return new UserDefinedFunction(functionName, scope, argumentNames, it.getObject());
     }
     Object *setSpecial(Object *args, Scope *scope) {
         if (!args->isList()) {
@@ -102,7 +109,7 @@ namespace special_forms {
         }
         int n = listLength(args);
         if (n % 2 != 0)
-            error("set special forms must contain even number of arguments");
+	  error("set special forms must contain even number of arguments");
         ListIterator it(args);
         Object *res = NullObject::null;
         while (it.hasNext()) {
