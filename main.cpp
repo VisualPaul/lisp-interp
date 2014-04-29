@@ -3,8 +3,16 @@
 #include "scope.h"
 #include <memory>
 
-int main(int argc, char **argv)
-{
+void load(const std::string &filename) {
+    std::ifstream in(filename);
+    Parser par(in);
+    Object *exp;
+    while ((exp = par.nextExpression()) != nullptr)
+        exp->evalute(Scope::global());
+}
+
+int main(int argc, char **argv) {
+    load("preload.lisp");
     bool repl_mode = true;
     std::unique_ptr<std::ifstream> ptr;
     std::istream *istr;
