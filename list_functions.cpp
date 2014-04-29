@@ -20,9 +20,19 @@ const std::string ConsFunction::NAME("cons");
             argumentNumberError(args, 1);
         return castArgument<ConsCell>(args, 0)->cdr();
     }
+
+    const std::string ListLengthFunction::NAME("list-length");
+    Object *ListLengthFunction::call(Arguments &args) {
+        if (args.positionArgs() != 1)
+            argumentNumberError(args, 1);
+        if (!args.getArg(0)->isList())
+            error("first argument to list-length function must be list");
+        return new Integer((long)listLength(args.getArg(0)));
+    }
     void list_init(Scope *scope) {
         _add(ConsFunction::object, scope);
         _add(CarFunction::object, scope);
         _add(CdrFunction::object, scope);
+        _add(ListLengthFunction::object, scope);
     }
 }

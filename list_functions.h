@@ -20,6 +20,7 @@ namespace functions {
         static const std::string NAME;
         Object *call(Arguments &args) override;
     };
+    declareFunctionHelper(ListLengthFunction);
 }
 
 #endif /* LIST_FUNCTIONS_H */
