@@ -59,6 +59,13 @@ namespace functions {
 	std::cout << castArgument<String>(args, 0)->getString() << '\n';
 	return NullObject::null;
     }
+
+    const std::string GetSymbolNameFunction::NAME("get-symbol-name");
+    Object *GetSymbolNameFunction::call(Arguments &args) {
+	if (args.positionArgs() != 1)
+	    argumentNumberError(args, 1);
+	return new String(castArgument<Symbol>(args, 0)->getText());
+    }
     void init(Scope *scope) {
         numeric_init(scope);
         list_init(scope);
@@ -68,6 +75,7 @@ namespace functions {
 	_add(PrintLineFunction::object, scope);
 	_add(WriteFunction::object, scope);
 	_add(WriteLineFunction::object, scope);
+	_add(GetSymbolNameFunction::object, scope);
     }
 }
 

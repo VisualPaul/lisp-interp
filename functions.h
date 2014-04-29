@@ -32,6 +32,7 @@ namespace functions {
     declareFunctionHelper(PrintLineFunction);
     declareFunctionHelper(WriteFunction);
     declareFunctionHelper(WriteLineFunction);
+    declareFunctionHelper(GetSymbolNameFunction);
     void list_init(Scope *scope);
     void numeric_init(Scope *scope);
     void init(Scope *scope);
