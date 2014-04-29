@@ -26,15 +26,15 @@ bool Function::isMacro() {
 Function::~Function() {}
 
 UserDefinedFunction::UserDefinedFunction(const std::string &name, Scope *baseScope,
-                                         const std::vector<Symbol *> &args, Object *body)
-    : _name(name), _baseScope(baseScope), _argumentsName(args), _body(body) {
+                                         const std::vector<Symbol *> &args, Object *body, bool macro, Symbol *rest)
+    : _name(name), _baseScope(baseScope), _argumentsName(args), _body(body), _restArgumentName(rest), _macro(macro) {
     if (!body->isList())
         error("function body argument must be list");
 }
 
 UserDefinedFunction::UserDefinedFunction(const std::string &name, Scope *baseScope,
-                                         std::vector<Symbol *> &&args, Object *body)
-    : _name(name), _baseScope(baseScope), _argumentsName(args), _body(body) {
+                                         std::vector<Symbol *> &&args, Object *body, bool macro, Symbol *rest)
+    : _name(name), _baseScope(baseScope), _argumentsName(args), _body(body), _restArgumentName(rest), _macro(macro) {
     if (!body->isList())
         error("function body argument must be list");
 }
@@ -45,13 +45,23 @@ std::string UserDefinedFunction::getName() {
 
 Object *UserDefinedFunction::call(Arguments &args) {
     std::unique_ptr<Scope> functionScope(new Scope(_baseScope));
-    if (args.positionArgs() != static_cast<int>(_argumentsName.size()))
+    int argumentNumber = static_cast<int>(_argumentsName.size());
+    if (args.positionArgs() < argumentNumber || (args.positionArgs() > argumentNumber && _restArgumentName == nullptr))
         argumentNumberError(args, static_cast<int>(_argumentsName.size()));
-    for (int i = 0; i < args.positionArgs(); ++i)
+    for (int i = 0; i < static_cast<int>(_argumentsName.size()); ++i)
         functionScope->addVariable(_argumentsName[i], args.getArg(i));
+    Object *restArgs = NullObject::null;
+    for (int i = args.positionArgs() - 1; i >= static_cast<int>(_argumentsName.size()); --i)
+        restArgs = new ConsCell(args.getArg(i), restArgs);
+    if (_restArgumentName != nullptr)
+        functionScope->addVariable(_restArgumentName, restArgs);
     Object *result = NullObject::null;
     ListIterator it(_body);
     while (it.hasNext())
         result = it.next()->evalute(functionScope.get());
     return result;
+}
+
+bool UserDefinedFunction::isMacro() {
+    return _macro;
 }

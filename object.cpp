@@ -279,17 +279,27 @@ Object *ConsCell::evalute(Scope *scope) {
             return setSpecial(cdr(), scope);
         else if (smb == defvarSymbol)
             return defvarSpecial(cdr(), scope);
+	else if (smb == macroSymbol)
+	    return macroSpecial(cdr(), scope);
+        else if (smb == whileSymbol)
+            return whileSpecial(cdr(), scope);
     }
     Function *func = dynamic_cast<Function *>(car()->evalute(scope));
     if (func == nullptr)
         error("first object in Lisp form must be either special form name or function");
     std::vector<Object *> argsVector;
     ListIterator it(cdr());
-    while (it.hasNext())
-        argsVector.push_back(it.next()->evalute(scope));
+    while (it.hasNext()) {
+	Object *obj = it.next();
+	if (!func->isMacro())
+	    obj = obj ->evalute(scope);
+        argsVector.push_back(obj);
+    }
     Arguments args(argsVector);
-    return func->call(args);
-    
+    Object *res = func->call(args);
+    if (func->isMacro())
+	res = res->evalute(scope);
+    return res;
 }
 
 bool ConsCell::isList() {

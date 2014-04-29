@@ -11,7 +11,7 @@ public:
     Arguments(const std::vector<Object *> &args) : _args(args) {}
     std::vector<Object *> getPositionArgs() {return _args; }
     Object *getArg(int idx) {
-        if (idx < 0 || (size_t)idx > _args.size())
+        if (idx < 0 || (size_t)idx >= _args.size())
             error("incorrect argument index: %d", idx);
         return _args[idx];
     }
@@ -55,15 +55,18 @@ protected:
 };
 class UserDefinedFunction : public Function {
 public:
-    UserDefinedFunction(const std::string &name, Scope *baseScope, const std::vector<Symbol *> &args, Object *body);
-    UserDefinedFunction(const std::string &name, Scope *baseScope, std::vector<Symbol *> &&args, Object *body);
+    UserDefinedFunction(const std::string &name, Scope *baseScope, const std::vector<Symbol *> &args, Object *body, bool macro = false, Symbol *restArgumentName = nullptr);
+    UserDefinedFunction(const std::string &name, Scope *baseScope, std::vector<Symbol *> &&args, Object *body, bool macro = false, Symbol *restArgumentName = nullptr);
     Object *call(Arguments &args) override;
     std::string getName() override;
+    bool isMacro() override;
 private:
     std::string _name;
     Scope *_baseScope;
     std::vector<Symbol *> _argumentsName;
     Object *_body;
+    Symbol *_restArgumentName;
+    bool _macro;
 };
 
 
