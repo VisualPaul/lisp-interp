@@ -32,6 +32,7 @@ Parser::_Token Parser::nextToken() {
 	skipSpaces();
 	if (_istr.eof())
 	    return _Token(TT_NO);
+        firstChar = next();
     }
     if (firstChar == '(') {
         return _Token(TT_OPEN);
