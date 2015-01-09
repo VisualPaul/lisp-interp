@@ -1,4 +1,5 @@
 #include "numeric_functions.h"
+#include <typeinfo>
 
 namespace functions {
     const std::string PlusFunction::NAME("+");    
