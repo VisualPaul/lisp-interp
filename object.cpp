@@ -6,7 +6,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <boost/regex.hpp>
+#include <regex>
 #include <iostream>
 
 bool Object::isList() {
@@ -127,7 +127,7 @@ bool Double::checkString(const std::string &str) {
     }
     if (!hasDigit)
         return false;
-    return boost::regex_match(str, boost::regex(R"([+-]?\d*(\.\d*)?([eE][+-]?\d+)?)"));
+    return std::regex_match(str, std::regex(R"([+-]?\d*(\.\d*)?([eE][+-]?\d+)?)"));
 }
 
 bool Double::isInteger() {
@@ -152,7 +152,7 @@ Double::~Double() {
 }
 
 bool Integer::checkString(const std::string &str) {
-    return boost::regex_match(str, boost::regex(R"([+-]?(0[0-7]*|0x[0-9a-fA-F]+|0b[01]+|[0-9]+))"));
+    return std::regex_match(str, std::regex(R"([+-]?(0[0-7]*|0x[0-9a-fA-F]+|0b[01]+|[0-9]+))"));
 }
 
 Integer *Integer::clone() {
