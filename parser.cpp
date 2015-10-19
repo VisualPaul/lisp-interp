@@ -72,7 +72,7 @@ Parser::_Token Parser::nextToken() {
         else if (Double::checkString(str))
             return _Token(new Double(str));
         else if (str == "nil")
-            return NullObject::null;
+            return NullObject::getNullObject();
         else
             return _Token(Symbol::getSymbol(str));
     }

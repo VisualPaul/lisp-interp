@@ -7,20 +7,28 @@
 #include <vector>
 #include <iostream>
 #include <gmpxx.h>
+#include "gc.h"
 
 class Scope;
 
 class Object {
 public:
+    Object();
     virtual Object *clone() = 0;
     virtual void free();
     virtual void print(std::ostream &out) = 0;
+
     virtual bool isList();
     virtual bool isNull();
     virtual Object *evalute(Scope *scope);
     virtual std::string getTypeName() = 0;
+    void gcMark();
 protected:
     virtual ~Object();
+    virtual void gcMarkChildren();
+private:
+    friend class GC;
+    bool _gcMark;
 };
 
 class Symbol : public Object {
@@ -55,6 +63,8 @@ private:
     static std::vector<std::string> *_vec;
     size_t _sym;
     Symbol() {}
+    friend class GC;
+    static void gcMarkSymbols();
 };
 
 class String : public Object {
@@ -157,11 +167,16 @@ public:
     std::string getTypeName() override;
     static const std::string TYPE_NAME;
 
-    static NullObject *const null;
+    static NullObject *getNullObject() {
+        if (_object.getNormalPointer() == nullptr)
+            _object = new NullObject;
+        return _object.getNormalPointer();
+    }
 protected:
     NullObject()  {}
     ~NullObject();
 private:
+    static GCObjectPtr<NullObject> _object;
 };
 
 class ConsCell : public Object {
@@ -189,14 +204,15 @@ public:
 
     std::string getTypeName() override;
     static const std::string TYPE_NAME;
-
+protected:
+    void gcMarkChildren() override;
 private:
     Object *_car, *_cdr;
 };
 
 inline Object *lispBool(bool x) {
     static Object *const trueValue = Symbol::getSymbol("t");
-    return x? trueValue : NullObject::null;
+    return x? trueValue : NullObject::getNullObject();
 }
 
 int listLength(Object *list);
@@ -208,7 +224,7 @@ void error(const char *fmt, ...) __attribute__((noreturn));
 
 class ListIterator {
 public:
-    ListIterator(Object *p = NullObject::null) : _p(p) {
+    ListIterator(Object *p = NullObject::getNullObject()) : _p(p) {
         if (!p->isList())
             error("incorrect argument to list iterator ctor: list expected");
     }

@@ -20,7 +20,7 @@ namespace functions {
 		std::cout << ' ';
 	    args.getArg(i)->print(std::cout);
 	}
-	return NullObject::null;
+	return NullObject::getNullObject();
     }
 
     const std::string ReadFunction::NAME("read");
@@ -41,7 +41,7 @@ namespace functions {
 	    args.getArg(i)->print(std::cout);
 	}
 	std::cout << '\n';
-	return NullObject::null;
+	return NullObject::getNullObject();
     }
 
     const std::string WriteFunction::NAME("write");
@@ -49,7 +49,7 @@ namespace functions {
 	if (args.positionArgs() != 1)
 	    argumentNumberError(args, 1);
 	std::cout << castArgument<String>(args, 0)->getString();
-	return NullObject::null;
+	return NullObject::getNullObject();
     }
 
     const std::string WriteLineFunction::NAME("write-line");
@@ -57,7 +57,7 @@ namespace functions {
 	if (args.positionArgs() != 1)
 	    argumentNumberError(args, 1);
 	std::cout << castArgument<String>(args, 0)->getString() << '\n';
-	return NullObject::null;
+	return NullObject::getNullObject();
     }
 
     const std::string GetSymbolNameFunction::NAME("get-symbol-name");

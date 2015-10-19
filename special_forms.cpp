@@ -24,7 +24,7 @@ namespace special_forms {
         auto vargs = ConsCell::toVector(args);
         Object *test = vargs[0];
         Object *then = vargs[1];
-        Object *otherwise = NullObject::null;
+        Object *otherwise = NullObject::getNullObject();
         if (vargs.size() == 3)
             otherwise = vargs[2];        
         if (!test->evalute(scope)->isNull())
@@ -54,7 +54,7 @@ namespace special_forms {
                 Symbol *name = dynamic_cast<Symbol *>(listGet(bind, 0));
                 if (!name)
                     error("mailformed bind for let special form");
-                Object *value = NullObject::null;
+                Object *value = NullObject::getNullObject();
                 if (len == 2)
                     value = listGet(bind, 1)->evalute(newScope.get());
                 newScope->addVariable(name, value);
@@ -62,7 +62,7 @@ namespace special_forms {
                 Symbol *name = dynamic_cast<Symbol *>(bind);
                 if (!name)
                     error("mailformed bind for let special form");
-                newScope->addVariable(name, NullObject::null);
+                newScope->addVariable(name, NullObject::getNullObject());
             }
         }
         return progSpecial(static_cast<ConsCell *>(args)->cdr(), newScope.get());
@@ -71,7 +71,7 @@ namespace special_forms {
         if (!args->isList()) {
             error("incorrect argument to function progsSpecial: expected list");
         }
-        Object *result = NullObject::null;
+        Object *result = NullObject::getNullObject();
         for (ListIterator it(args); it.hasNext(); ) {
             result = it.next()->evalute(scope);
         }
@@ -128,7 +128,7 @@ namespace special_forms {
         if (n % 2 != 0)
 	  error("set special forms must contain even number of arguments");
         ListIterator it(args);
-        Object *res = NullObject::null;
+        Object *res = NullObject::getNullObject();
         while (it.hasNext()) {
             Symbol *name = dynamic_cast<Symbol *>(it.next()->evalute(scope));
             if (name == nullptr)
@@ -145,7 +145,7 @@ namespace special_forms {
         if (listLength(args) % 2 != 0)
             error("defvar special form must contain even number of arguments");
         ListIterator it(args);
-        Object *res = NullObject::null;
+        Object *res = NullObject::getNullObject();
         while (it.hasNext()) {
             Symbol *name = dynamic_cast<Symbol *>(it.next());
             if (name == nullptr)
@@ -163,7 +163,7 @@ namespace special_forms {
             error("while special form must contain at least one expression");
         ListIterator it(args);
         Object *condition = it.next();
-        Object *result = NullObject::null;
+        Object *result = NullObject::getNullObject();
         while (!condition->evalute(scope)->isNull())
             result = progSpecial(it.getObject(), scope);
         return result;

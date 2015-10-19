@@ -50,12 +50,12 @@ Object *UserDefinedFunction::call(Arguments &args) {
         argumentNumberError(args, static_cast<int>(_argumentsName.size()));
     for (int i = 0; i < static_cast<int>(_argumentsName.size()); ++i)
         functionScope->addVariable(_argumentsName[i], args.getArg(i));
-    Object *restArgs = NullObject::null;
+    Object *restArgs = NullObject::getNullObject();
     for (int i = args.positionArgs() - 1; i >= static_cast<int>(_argumentsName.size()); --i)
         restArgs = new ConsCell(args.getArg(i), restArgs);
     if (_restArgumentName != nullptr)
         functionScope->addVariable(_restArgumentName, restArgs);
-    Object *result = NullObject::null;
+    Object *result = NullObject::getNullObject();
     ListIterator it(_body);
     while (it.hasNext())
         result = it.next()->evalute(functionScope.get());

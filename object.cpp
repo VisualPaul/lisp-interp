@@ -25,7 +25,23 @@ void Object::free() {
     delete this;
 }
 
+Object::Object() {
+    GC *gc = GC::getGC();
+    gc->_objects.push_back(this);
+    gc->maybeCollectGarbage();
+}
+
 Object::~Object() {
+}
+
+void Object::gcMark() {
+    if (_gcMark)
+        return;
+    _gcMark = true;
+    gcMarkChildren();
+}
+
+void Object::gcMarkChildren() {
 }
 
 Symbol *Symbol::clone() {
@@ -54,6 +70,13 @@ std::string Symbol::getTypeName() {
 
 std::string Symbol::getText() {
     return _v()[_sym];
+}
+
+void Symbol::gcMarkSymbols() {
+    auto m = _m();
+    for (auto it = m->begin(); it != m->end(); ++it) {
+        it->second->gcMark();
+    }
 }
 
 Object *Symbol::evalute(Scope *scope) {
@@ -187,8 +210,6 @@ NullObject *NullObject::clone() {
 void NullObject::free() {
 }
 
-NullObject *const NullObject::null = new NullObject;
-
 bool NullObject::isList() {
     return true;
 }
@@ -207,6 +228,8 @@ std::string NullObject::getTypeName() {
     return TYPE_NAME;
 }
 
+GCObjectPtr<NullObject> NullObject::_object(nullptr);
+
 NullObject::~NullObject() {
 }
 
@@ -216,7 +239,7 @@ ConsCell *ConsCell::clone() {
 
 Object *ConsCell::fromVector(const std::vector<Object *> &vc)
 {
-    Object *result = NullObject::null;
+    Object *result = NullObject::getNullObject();
     for (auto it = vc.rbegin(); it != vc.rend(); ++it)
         result = new ConsCell(*it, result);
     return result;
@@ -304,6 +327,11 @@ Object *ConsCell::evalute(Scope *scope) {
 
 bool ConsCell::isList() {
     return cdr()->isList();
+}
+
+void ConsCell::gcMarkChildren() {
+    car()->gcMark();
+    cdr()->gcMark();
 }
 
 ConsCell::~ConsCell() {
