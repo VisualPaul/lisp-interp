@@ -28,7 +28,6 @@ void Object::free() {
 Object::Object() {
     GC *gc = GC::getGC();
     gc->_objects.push_back(this);
-    gc->maybeCollectGarbage();
 }
 
 Object::~Object() {
