@@ -3,6 +3,10 @@
 #include "scope.h"
 
 namespace functions {
+    template <typename T>
+    inline void _add(const GCObjectPtr<T> &ptr, Scope *scope) {
+        _add(ptr.getNormalPointer(), scope);
+    }
     inline void _add(Function *func, Scope *scope) {
         scope->addVariable(Symbol::getSymbol(func->getName()), func);
     }
@@ -12,14 +16,15 @@ namespace functions {
         ~FunctionHelper() {}
     public:
         std::string getName() override;
-        static Func *const object;
+        static GCObjectPtr<Func> object;
     };
     template <class Func> std::string FunctionHelper<Func>::getName() {
         static_assert(std::is_base_of<FunctionHelper<Func>, Func>::value,
                       "FunctionHelper's template argument must be derived from the same FunctionHelper");
         return Func::NAME;
     }
-    template <class Func> Func *const FunctionHelper<Func>::object = new Func;
+    template <class Func>
+    GCObjectPtr<Func> FunctionHelper<Func>::object(new Func);
 #define declareFunctionHelper(className)\
     class className : public FunctionHelper<className> {\
     public:\

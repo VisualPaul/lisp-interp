@@ -22,17 +22,19 @@ public:
 /* Stack allocation only. Don't even try to use this in heap */
 template <typename T>
 class GCObjectPtr : GCObjectPtrBase {
-    static_assert(std::is_base_of<Object, T>::value,
-                  "GCObjectPtr can point to Object subclasses only");
+
 public:
-    GCObjectPtr(T *x) : GCObjectPtrBase(x) {}
-    T &operator *() {
+    GCObjectPtr(T *x) : GCObjectPtrBase(x) {
+        static_assert(std::is_base_of<Object, T>::value,
+                      "GCObjectPtr can point to Object subclasses only");
+    }
+    T &operator *() const {
         return *getNormalPointer();
     }
-    T *getNormalPointer() {
+    T *getNormalPointer() const {
         return static_cast<T *>(_pointer);
     }
-    T *operator ->() {
+    T *operator ->() const {
         return getNormalPointer();
     }
     GCObjectPtr<T> &operator = (T *pointer);
