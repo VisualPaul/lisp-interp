@@ -143,7 +143,7 @@ double Double::toDouble() {
 }
 
 void Double::print(std::ostream &str) {
-    str << '"' <<  _val << '"';
+    str << _val;
 }
 
 const std::string Double::TYPE_NAME("Double");
