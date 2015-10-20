@@ -70,13 +70,19 @@ public:
     static inline GC *getGC();
     void collectGarbage();
     void maybeCollectGarbage() {
+#ifdef GC_DEBUG
         collectGarbage();
+#else
+        if (_objects.size() > _targetObjectNumber)
+            collectGarbage();
+#endif
     }
 private:
     GC();
     std::vector<GCObjectPtrBase *> _gcBases;
     std::vector<GCObject *> _objects;
     static GC *_object;
+    std::size_t _targetObjectNumber;
     friend class GCObjectPtrBase;
     friend class GCObject;
 

@@ -32,7 +32,7 @@ GCObjectPtrBase::~GCObjectPtrBase() {
     gc->_gcBases.pop_back();
 }
 
-GC::GC() :_gcForbidden(false) {}
+GC::GC() : _targetObjectNumber(100), _gcForbidden(false) {}
 
 void GC::collectGarbage() {
     if (_gcForbidden)
@@ -65,6 +65,7 @@ void GC::collectGarbage() {
     for (GCObject *x : _objects) {
         x->_gcMark = false;
     }
+    _targetObjectNumber = _objects.size() * 2;
 }
 
 GC *GC::_object;
