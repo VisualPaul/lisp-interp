@@ -5,7 +5,7 @@ if (GC_DEBUG)
   add_definitions(-DGC_DEBUG)
 endif()
 list(APPEND CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Wconversion")
-add_executable(main function.cpp functions.cpp object.cpp parser.cpp
+add_executable(lisp function.cpp functions.cpp object.cpp parser.cpp
   special_forms.cpp scope.cpp main.cpp numeric_functions.cpp list_functions.cpp gc.cpp)
 
-target_link_libraries(main gmp gmpxx)
+target_link_libraries(lisp gmp gmpxx)
