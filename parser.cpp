@@ -28,10 +28,10 @@ Parser::_Token Parser::nextToken() {
         return _Token(TT_NO);
     char firstChar = next();
     while (firstChar == ';') {
-	while (next() != '\n' && !_istr.eof()) ;
-	skipSpaces();
-	if (_istr.eof())
-	    return _Token(TT_NO);
+        while (next() != '\n' && !_istr.eof()) ;
+        skipSpaces();
+        if (_istr.eof())
+            return _Token(TT_NO);
         firstChar = next();
     }
     if (firstChar == '(') {

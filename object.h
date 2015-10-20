@@ -49,9 +49,9 @@ private:
         return _map;
     }
     static std::vector<std::string> &_v() {
-	if (!_vec)
-	    _vec = new std::vector<std::string>;
-	return *_vec;
+        if (!_vec)
+            _vec = new std::vector<std::string>;
+        return *_vec;
     }
     static std::vector<std::string> *_vec;
     size_t _sym;

@@ -78,7 +78,7 @@ namespace special_forms {
         return result.getNormalPointer();
     }
     static Object *doLambdaMacroSpecial(bool macro, Object *args, Scope *scope) {
-	static Symbol *const restSymbol = Symbol::getSymbol("&rest");
+        static Symbol *const restSymbol = Symbol::getSymbol("&rest");
         if (!args->isList()) {
             error("incorrect argument to function doLambdaMacroSpecial: expected list");
         }
