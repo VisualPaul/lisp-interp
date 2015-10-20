@@ -34,7 +34,7 @@ namespace special_forms {
     }
     
     Object *letSpecial(Object *args, Scope *scope) {
-        std::unique_ptr<Scope> newScope(new Scope(scope));
+        GCObjectPtr<Scope> newScope(Scope::newScope(scope));
         if (!args->isList()) {
             error("incorrect argument to function letSpecial: expected list");
         }
@@ -54,10 +54,10 @@ namespace special_forms {
                 Symbol *name = dynamic_cast<Symbol *>(listGet(bind, 0));
                 if (!name)
                     error("mailformed bind for let special form");
-                Object *value = NullObject::getNullObject();
+                GCObjectPtr<Object> value = NullObject::getNullObject();
                 if (len == 2)
-                    value = listGet(bind, 1)->evalute(newScope.get());
-                newScope->addVariable(name, value);
+                    value = listGet(bind, 1)->evalute(newScope.getNormalPointer());
+                newScope->addVariable(name, value.getNormalPointer());
             } else {
                 Symbol *name = dynamic_cast<Symbol *>(bind);
                 if (!name)
@@ -65,17 +65,17 @@ namespace special_forms {
                 newScope->addVariable(name, NullObject::getNullObject());
             }
         }
-        return progSpecial(static_cast<ConsCell *>(args)->cdr(), newScope.get());
+        return progSpecial(static_cast<ConsCell *>(args)->cdr(), newScope.getNormalPointer());
     }
     Object *progSpecial(Object *args, Scope *scope) {
         if (!args->isList()) {
             error("incorrect argument to function progsSpecial: expected list");
         }
-        Object *result = NullObject::getNullObject();
+        GCObjectPtr<Object> result = NullObject::getNullObject();
         for (ListIterator it(args); it.hasNext(); ) {
             result = it.next()->evalute(scope);
         }
-        return result;
+        return result.getNormalPointer();
     }
     static Object *doLambdaMacroSpecial(bool macro, Object *args, Scope *scope) {
 	static Symbol *const restSymbol = Symbol::getSymbol("&rest");
@@ -87,27 +87,27 @@ namespace special_forms {
         }
         ListIterator it(args);
         Object *bindings = it.next();
-	String *functionNameObj = dynamic_cast<String *>(bindings);
-	std::string functionName(macro? "macro" : "lambda");
-	if (functionNameObj != nullptr) {
-	    bindings = it.next();
-	    functionName = functionNameObj->getString();
-	}
-	Symbol *rest = nullptr;
+        String *functionNameObj = dynamic_cast<String *>(bindings);
+        std::string functionName(macro? "macro" : "lambda");
+        if (functionNameObj != nullptr) {
+            bindings = it.next();
+            functionName = functionNameObj->getString();
+        }
+        Symbol *rest = nullptr;
         std::vector<Symbol *> argumentNames;
         ListIterator argIt(bindings);
         while (argIt.hasNext()) {
             Symbol *sym = dynamic_cast<Symbol *>(argIt.next());
-	    if (sym == restSymbol) {
-		if (!argIt.hasNext())
-		    error("mailformed bindings for %s special form: not enough symbols", macro? "macro" : "lambda");
-		rest = dynamic_cast<Symbol *>(argIt.next());
-		if (sym == nullptr)
-		    error("mailformed bindings for %s special form: symbol expected", macro? "macro" : "lambda");
-		if (argIt.hasNext())
-		    error("mailformed bindings for %s special form: too many symbol after &rest argument", macro? "macro" : "lambda");
-		break;
-	    }	
+            if (sym == restSymbol) {
+                if (!argIt.hasNext())
+                    error("mailformed bindings for %s special form: not enough symbols", macro? "macro" : "lambda");
+                rest = dynamic_cast<Symbol *>(argIt.next());
+                if (sym == nullptr)
+                    error("mailformed bindings for %s special form: symbol expected", macro? "macro" : "lambda");
+                if (argIt.hasNext())
+                    error("mailformed bindings for %s special form: too many symbol after &rest argument", macro? "macro" : "lambda");
+                break;
+            }        
             if (sym == nullptr)
                 error("mailformed bindings for %s special form: symbol expected", macro? "macro" : "lambda");
             argumentNames.push_back(sym);
@@ -118,7 +118,7 @@ namespace special_forms {
         return doLambdaMacroSpecial(false, args, scope);
     }
     Object *macroSpecial(Object *args, Scope *scope) {
-	return doLambdaMacroSpecial(true, args, scope);
+        return doLambdaMacroSpecial(true, args, scope);
     }
     Object *setSpecial(Object *args, Scope *scope) {
         if (!args->isList()) {
@@ -126,7 +126,7 @@ namespace special_forms {
         }
         int n = listLength(args);
         if (n % 2 != 0)
-	  error("set special forms must contain even number of arguments");
+          error("set special forms must contain even number of arguments");
         ListIterator it(args);
         Object *res = NullObject::getNullObject();
         while (it.hasNext()) {

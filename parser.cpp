@@ -79,6 +79,7 @@ Parser::_Token Parser::nextToken() {
 }
 
 Object *Parser::nextExpression() {
+    GCProtector prot;
     _Token firstToken = nextToken();
     if (firstToken.getType() == TT_NO) {
         return nullptr;

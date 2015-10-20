@@ -2,6 +2,14 @@
 #include "scope.h"
 #include <memory>
 
+Arguments::Arguments(Object *argList) : _args(listLength(argList)) {
+    ListIterator it(argList);
+    for (size_t i = _args.size(); i != 0; ) {
+        --i;
+        _args[i] = it.next();
+    }
+}
+
 Function *Function::clone() {
     return this;
 }
@@ -44,24 +52,32 @@ std::string UserDefinedFunction::getName() {
 }
 
 Object *UserDefinedFunction::call(Arguments &args) {
-    std::unique_ptr<Scope> functionScope(new Scope(_baseScope));
+    GCObjectPtr<Scope> functionScope(Scope::newScope(_baseScope));
     int argumentNumber = static_cast<int>(_argumentsName.size());
-    if (args.positionArgs() < argumentNumber || (args.positionArgs() > argumentNumber && _restArgumentName == nullptr))
+    if (args.positionArgs() < argumentNumber || (args.positionArgs() > argumentNumber
+                                                 && _restArgumentName == nullptr))
         argumentNumberError(args, static_cast<int>(_argumentsName.size()));
     for (int i = 0; i < static_cast<int>(_argumentsName.size()); ++i)
         functionScope->addVariable(_argumentsName[i], args.getArg(i));
-    Object *restArgs = NullObject::getNullObject();
-    for (int i = args.positionArgs() - 1; i >= static_cast<int>(_argumentsName.size()); --i)
-        restArgs = new ConsCell(args.getArg(i), restArgs);
-    if (_restArgumentName != nullptr)
-        functionScope->addVariable(_restArgumentName, restArgs);
-    Object *result = NullObject::getNullObject();
+    {
+        GCObjectPtr<Object> restArgs(NullObject::getNullObject());
+        for (int i = args.positionArgs() - 1; i >= static_cast<int>(_argumentsName.size()); --i)
+            restArgs = new ConsCell(args.getArg(i), restArgs.getNormalPointer());
+        if (_restArgumentName != nullptr)
+            functionScope->addVariable(_restArgumentName, restArgs.getNormalPointer());
+    }
+    GCObjectPtr<Object> result = NullObject::getNullObject();
     ListIterator it(_body);
     while (it.hasNext())
-        result = it.next()->evalute(functionScope.get());
-    return result;
+        result = it.next()->evalute(functionScope.getNormalPointer());
+    return result.getNormalPointer();
 }
 
 bool UserDefinedFunction::isMacro() {
     return _macro;
+}
+
+void UserDefinedFunction::gcMarkChildren() {
+    _baseScope->gcMark();
+    _body->gcMark();
 }

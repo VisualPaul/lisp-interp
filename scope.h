@@ -3,10 +3,13 @@
 #define SCOPE_H
 #include "object.h"
 
-class Scope {
+class Scope : public GCObject {
     Scope();
-public:
     Scope(Scope *parent);
+public:
+    static Scope *newScope(Scope *parent) {
+        return new Scope(parent);
+    }
     Object *getVariable(Symbol *sym);
     void setVariable(Symbol *sym, Object *value);
     void addVariable(Symbol *sym, Object *value) {
@@ -17,19 +20,21 @@ public:
     }
     Scope *dropScope() {
         Scope *result = parentScope();
-        delete this;
         return result;
     }
     bool hasVariable(Symbol *sym) {
         return getVariable(sym) != nullptr;
     }
     static Scope *global();
-    
-    ~Scope() {}
+
+    std::string gcRepr() override;
+protected:
+    void gcMarkChildren() override;
 private:
+    ~Scope() override;
     std::unordered_map<int, Object *> _m;
     Scope *_parent;
-    static Scope *_global;
+    static GCObjectPtr<Scope> _global;
 };
 
 #endif /* SCOPE_H */

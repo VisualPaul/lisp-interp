@@ -5,6 +5,7 @@
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
+#include <sstream>
 #include <cstdlib>
 #include <regex>
 #include <iostream>
@@ -21,33 +22,14 @@ Object *Object::evalute(Scope *) {
     return this;
 }
 
-void Object::free() {
-    delete this;
-}
-
-Object::Object() {
-    GC *gc = GC::getGC();
-    gc->_objects.push_back(this);
-}
-
-Object::~Object() {
-}
-
-void Object::gcMark() {
-    if (_gcMark)
-        return;
-    _gcMark = true;
-    gcMarkChildren();
-}
-
-void Object::gcMarkChildren() {
+std::string Object::gcRepr() {
+    std::ostringstream os;
+    print(os);
+    return os.str();
 }
 
 Symbol *Symbol::clone() {
     return this; 
-}
-
-void Symbol::free() {
 }
 
 Symbol *Symbol::getSymbol(const std::string &str) {
@@ -79,10 +61,10 @@ void Symbol::gcMarkSymbols() {
 }
 
 Object *Symbol::evalute(Scope *scope) {
-    Object *result = scope->getVariable(this);
+    GCObjectPtr<Object> result = scope->getVariable(this);
     if (result == nullptr)
         error("no such variable: %s", getText().c_str());
-    return result;
+    return result.getNormalPointer();
 }
 
 void Symbol::print(std::ostream &out) {
@@ -161,7 +143,7 @@ double Double::toDouble() {
 }
 
 void Double::print(std::ostream &str) {
-    str << _val;
+    str << '"' <<  _val << '"';
 }
 
 const std::string Double::TYPE_NAME("Double");
@@ -204,9 +186,6 @@ Integer::~Integer() {
 
 NullObject *NullObject::clone() {
     return this;
-}
-
-void NullObject::free() {
 }
 
 bool NullObject::isList() {
@@ -301,27 +280,27 @@ Object *ConsCell::evalute(Scope *scope) {
             return setSpecial(cdr(), scope);
         else if (smb == defvarSymbol)
             return defvarSpecial(cdr(), scope);
-	else if (smb == macroSymbol)
-	    return macroSpecial(cdr(), scope);
+        else if (smb == macroSymbol)
+            return macroSpecial(cdr(), scope);
         else if (smb == whileSymbol)
             return whileSpecial(cdr(), scope);
     }
-    Function *func = dynamic_cast<Function *>(car()->evalute(scope));
+    GCObjectPtr<Function> func = dynamic_cast<Function *>(car()->evalute(scope));
     if (func == nullptr)
         error("first object in Lisp form must be either special form name or function");
-    std::vector<Object *> argsVector;
+    GCObjectPtr<Object> argsList(NullObject::getNullObject());
     ListIterator it(cdr());
     while (it.hasNext()) {
-	Object *obj = it.next();
-	if (!func->isMacro())
-	    obj = obj ->evalute(scope);
-        argsVector.push_back(obj);
+        Object *obj = it.next();
+        if (!func->isMacro())
+            obj = obj ->evalute(scope);
+        argsList = new ConsCell(obj, argsList.getNormalPointer());
     }
-    Arguments args(argsVector);
-    Object *res = func->call(args);
+    Arguments args(argsList.getNormalPointer());
+    GCObjectPtr<Object> res = func->call(args);
     if (func->isMacro())
-	res = res->evalute(scope);
-    return res;
+        res = res->evalute(scope);
+    return res.getNormalPointer();
 }
 
 bool ConsCell::isList() {

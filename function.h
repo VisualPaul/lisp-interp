@@ -6,9 +6,7 @@
 
 class Arguments {
 public:    
-    Arguments(Object *argList) : _args(ConsCell::toVector(argList)) {}
-    Arguments(std::vector<Object *> &&args) : _args(args) {}
-    Arguments(const std::vector<Object *> &args) : _args(args) {}
+    Arguments(Object *argList); // argList is reversed here
     std::vector<Object *> getPositionArgs() {return _args; }
     Object *getArg(int idx) {
         if (idx < 0 || (size_t)idx >= _args.size())
@@ -50,7 +48,6 @@ protected:
     void argumentNumberError(Arguments &args, int expected) __attribute__((noreturn)) {
         error("wrong number of arguments at %s call: expected %d got %d", getName().c_str(), expected, args.positionArgs());
     }
-
     ~Function();
 };
 class UserDefinedFunction : public Function {
@@ -60,6 +57,8 @@ public:
     Object *call(Arguments &args) override;
     std::string getName() override;
     bool isMacro() override;
+protected:
+    void gcMarkChildren();
 private:
     std::string _name;
     Scope *_baseScope;

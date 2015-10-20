@@ -13,12 +13,12 @@ Scope::Scope(Scope *parentScope) : _parent(parentScope) {
         error("parent scope must not be null at Scope::Scope(Scope *)");
 }
 
-Scope *Scope::_global = nullptr;
+GCObjectPtr<Scope> Scope::_global(nullptr);
 
 Scope *Scope::global() {
     if (!_global)
-	_global = new Scope;
-    return _global; 
+        _global = new Scope;
+    return _global.getNormalPointer(); 
 }
 
 void Scope::setVariable(Symbol *sym, Object *val) {
@@ -41,4 +41,17 @@ Object *Scope::getVariable(Symbol *sym) {
             return it->second;
     }
     return nullptr;
+}
+
+Scope::~Scope() {}
+
+void Scope::gcMarkChildren() {
+    if (_parent)
+        _parent->gcMark();
+    for (auto it = _m.begin(); it != _m.end(); ++it)
+        it->second->gcMark();
+}
+
+std::string Scope::gcRepr() {
+    return "Scope";
 }

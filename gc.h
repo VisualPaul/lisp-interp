@@ -5,16 +5,35 @@
 #include <type_traits>
 #include <vector>
 #include <cstddef>
+#include <string>
+#include <cassert>
+#include <cstdio>
 
-class Object;
 class GC;
+
+class GCObject {
+public:
+    GCObject();
+    void gcMark();
+    virtual std::string gcRepr() = 0;
+protected:
+    virtual void gcMarkChildren();
+    virtual ~GCObject();
+private:
+    void free() {
+        delete this;
+    }
+        
+    friend class GC;
+    bool _gcMark;
+};
 
 /* For internal usage only */
 class GCObjectPtrBase {
 protected:
-    Object *_pointer;
+    GCObject *_pointer;
 public:
-    GCObjectPtrBase(Object *obj);
+    GCObjectPtrBase(GCObject *obj);
     ~GCObjectPtrBase();
     friend class GC;
 };
@@ -22,10 +41,9 @@ public:
 /* Stack allocation only. Don't even try to use this in heap */
 template <typename T>
 class GCObjectPtr : GCObjectPtrBase {
-
 public:
     GCObjectPtr(T *x) : GCObjectPtrBase(x) {
-        static_assert(std::is_base_of<Object, T>::value,
+        static_assert(std::is_base_of<GCObject, T>::value,
                       "GCObjectPtr can point to Object subclasses only");
     }
     T &operator *() const {
@@ -37,11 +55,15 @@ public:
     T *operator ->() const {
         return getNormalPointer();
     }
+    operator void *() {
+        return _pointer;
+    }
     GCObjectPtr<T> &operator = (T *pointer);
     
     void *operator new(size_t s) = delete;
     void operator delete(void *p) = delete;
 };
+
 
 class GC {
 public:
@@ -51,12 +73,28 @@ public:
         collectGarbage();
     }
 private:
-    GC() {}
+    GC();
     std::vector<GCObjectPtrBase *> _gcBases;
-    std::vector<Object *> _objects;
+    std::vector<GCObject *> _objects;
     static GC *_object;
     friend class GCObjectPtrBase;
-    friend class Object;
+    friend class GCObject;
+
+    bool _gcForbidden; // hack
+    friend class GCProtector;
+};
+
+class GCProtector {
+    GC *gc;
+    bool pstate;
+public:
+    GCProtector() : gc(GC::getGC()) {
+        pstate = gc->_gcForbidden;
+        gc->_gcForbidden = true;
+    }
+    ~GCProtector() {
+        gc->_gcForbidden = pstate;
+    }
 };
 
 GC *GC::getGC() {

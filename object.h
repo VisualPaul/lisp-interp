@@ -7,34 +7,27 @@
 #include <vector>
 #include <iostream>
 #include <gmpxx.h>
+#include <string>
 #include "gc.h"
 
 class Scope;
 
-class Object {
+class Object : public GCObject {
 public:
-    Object();
+    std::string gcRepr() override;
+    Object() {}
     virtual Object *clone() = 0;
-    virtual void free();
     virtual void print(std::ostream &out) = 0;
 
     virtual bool isList();
     virtual bool isNull();
     virtual Object *evalute(Scope *scope);
     virtual std::string getTypeName() = 0;
-    void gcMark();
-protected:
-    virtual ~Object();
-    virtual void gcMarkChildren();
-private:
-    friend class GC;
-    bool _gcMark;
 };
 
 class Symbol : public Object {
 public:
     Symbol *clone() override;
-    void free() override;
     static Symbol *getSymbol(const std::string &str);
     std::string getText();
     int getId() { return static_cast<int>(_sym); }
@@ -78,8 +71,8 @@ public:
     static const std::string TYPE_NAME;
 
     std::string getString() { return _str; }
+private:
     ~String();
-private:    
     std::string _str;
 };
 
@@ -93,8 +86,8 @@ public:
     static const std::string TYPE_NAME;
 
     char getChar() { return _c; }
-    ~Character();
 private:
+    ~Character();
     char _c;
 };
 
@@ -128,8 +121,8 @@ public:
     mpz_class getVal() {
         return _val;
     }
-    ~Integer();
 private:
+    ~Integer();
     mpz_class _val;
 };
 
@@ -148,9 +141,9 @@ public:
     double toDouble() override;
 
     double getVal() { return _val; }
-    
-    ~Double();
+
 private:
+    ~Double();
     double _val;
 };
 
@@ -160,7 +153,6 @@ public:
     void operator =(const NullObject &) = delete;
     NullObject *clone() override;
     void print(std::ostream &out) override;
-    void free() override;
     bool isList() override;
     bool isNull() override;
 
@@ -199,14 +191,14 @@ public:
     }
     bool isList() override;
     ConsCell *clone() override;
-    ~ConsCell();
-    void print(std::ostream &str) override;
 
+    void print(std::ostream &str) override;
     std::string getTypeName() override;
     static const std::string TYPE_NAME;
 protected:
     void gcMarkChildren() override;
 private:
+    ~ConsCell();
     Object *_car, *_cdr;
 };
 
