@@ -17,7 +17,7 @@ Use following commands:
 git clone https://github.com/VisualPaul/lisp-interp.git # To download the source code
 cmake lisp-interp # to create Makefile
 cd lisp-interp
-make -j4 # replace 4 with your number of processor cores
+make -j
 ```
 
 Using the interpreter
