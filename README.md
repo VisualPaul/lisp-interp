@@ -23,8 +23,8 @@ make -j
 Using the interpreter
 ---------------------
 
-To use the interpreter you shall run ./main
-There are two forms of this command: interactive REPL `./main` and non-interactive interpreter `./main your-code.lisp`
+To use the interpreter you shall run ./lisp
+There are two forms of this command: interactive REPL `./lisp` and non-interactive interpreter `./lisp your-code.lisp`
 The difference should be clear.
 
 Quick introduction to the language
